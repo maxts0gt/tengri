@@ -2,12 +2,17 @@
 
 import { motion } from 'framer-motion';
 
-export default function Logo() {
+interface LogoProps {
+  onClick?: () => void;
+}
+
+export default function Logo({ onClick }: LogoProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative z-10"
+      className="relative z-10 cursor-pointer"
+      onClick={onClick}
     >
       {/* Modern Tengri Logotype */}
       <h1 className="text-2xl tracking-tighter text-white">

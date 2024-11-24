@@ -238,7 +238,7 @@ export default function Navbar() {
     <>
       <motion.header 
         className={`fixed w-full z-50 transition-colors duration-500 ${
-          isScrolled ? 'bg-primary/95 backdrop-blur-sm' : 'bg-transparent'
+          isScrolled ? 'bg-[#0A1628]/95 backdrop-blur-sm' : 'bg-transparent'
         }`}
         initial={false}
       >
@@ -248,7 +248,17 @@ export default function Navbar() {
               href="/" 
               className="relative group" 
               aria-label="Tengri Home"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                  mainContent.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
             >
               <Logo />
             </Link>
@@ -289,7 +299,7 @@ export default function Navbar() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-primary"
+            className="fixed inset-0 z-40 bg-[#0A1628]"
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}

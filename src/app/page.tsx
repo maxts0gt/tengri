@@ -122,6 +122,25 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
+        <motion.div 
+          className="absolute bottom-8 right-8 flex flex-col items-center gap-2 z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, y: [0, 10, 0] }}
+          transition={{ 
+            opacity: { delay: 1 },
+            y: { repeat: Infinity, duration: 1.5, ease: "easeInOut" }
+          }}
+        >
+          <div className="text-white/40 text-sm uppercase tracking-wider">Scroll</div>
+          <div className="w-[2px] h-8 bg-white/20 relative overflow-hidden">
+            <motion.div 
+              className="absolute top-0 left-0 w-full bg-[#E63946]"
+              animate={{ y: ["0%", "100%", "0%"] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              style={{ height: "30%" }}
+            />
+          </div>
+        </motion.div>
       </section>
 
       {/* The journey lines with chapter numbers - only visible after intro */}
