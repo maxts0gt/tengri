@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [currentChapter, setCurrentChapter] = useState(0);
+  const [currentChapter, setCurrentChapter] = useState(-1);
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -71,14 +71,66 @@ export default function Home() {
       metrics: "10M+ People Reached"
     }
   ];
-  const lineHeight = `${((currentChapter + 1) * 100) / chapters.length}%`;
+  const lineHeight = currentChapter >= 0 
+    ? `${((currentChapter + 1) * 100) / chapters.length}%` 
+    : "0%";
   return (
     <main 
       ref={containerRef} 
       className="relative bg-[#0A1628] snap-y snap-mandatory h-screen overflow-y-scroll"
     >
-      {/* The journey lines with chapter numbers */}
-      <div className="fixed left-[5vw] top-0 h-screen z-50">
+      {/* Hero Section */}
+      <section 
+        className="h-screen w-full flex items-center snap-start snap-always"
+        ref={(node) => {
+          const observer = new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                setCurrentChapter(-1); // Reset to intro state
+              }
+            },
+            { threshold: 0.5 }
+          );
+          if (node) observer.observe(node);
+        }}
+      >
+        <div className="tengri-container">
+          <div className="grid grid-cols-12 gap-8">
+            <motion.div 
+              className="col-span-8 space-y-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="text-[8vw] font-bold leading-none">
+                <span className="text-white">We build technology</span>
+                <br />
+                <span className="text-[#E63946]">that moves millions.</span>
+              </h1>
+              <p className="text-2xl text-white/60 max-w-2xl">
+                From grassroots movements to global media platforms, 
+                we create digital solutions that drive real change.
+              </p>
+              <motion.div 
+                className="text-[#E63946] text-xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                → Scroll to explore our journey
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* The journey lines with chapter numbers - only visible after intro */}
+      <motion.div 
+        className="fixed left-[5vw] top-0 h-screen z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: currentChapter >= 0 ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
+      >
         {/* Primary line */}
         <motion.div 
           className="absolute left-0 w-[2px] bg-[#E63946] origin-top"
@@ -94,7 +146,7 @@ export default function Home() {
           animate={{ height: lineHeight }}
           transition={{ duration: 0.5 }}
         />
-      </div>
+      </motion.div>
 
       {chapters.map((chapter, index) => {
         const sectionRef = useRef(null);
