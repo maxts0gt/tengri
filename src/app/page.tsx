@@ -102,7 +102,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-[8vw] font-bold leading-none">
+              <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-bold leading-none">
                 <span className="text-white">We build technology</span>
                 <br />
                 <span className="text-[#E63946]">that moves millions.</span>
@@ -187,14 +187,14 @@ export default function Home() {
               <div className="grid grid-cols-12 gap-8">
                 {/* Left side with chapter number */}
                 <motion.div 
-                  className="col-span-5 relative pl-[5vw]"
+                  className="col-span-5 relative"
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: false, margin: "-20% 0px" }}
                 >
                   {/* Chapter markers with number */}
                   <motion.div 
-                    className="absolute left-[5vw] -translate-x-[calc(50%+1px)]"
+                    className="absolute -left-8"
                     initial={{ scale: 0 }}
                     whileInView={{ scale: 1 }}
                     viewport={{ once: false }}
@@ -206,17 +206,17 @@ export default function Home() {
                     </div>
                   </motion.div>
 
-                  <h2 className={`text-8xl font-bold ${chapter.color} mb-6`}>
+                  <h2 className={`text-5xl md:text-8xl font-bold ${chapter.color} mb-6`}>
                     {chapter.title}
                   </h2>
-                  <h3 className="text-4xl text-white mb-4">{chapter.product}</h3>
-                  <p className="text-xl text-white/60 mb-8">{chapter.description}</p>
-                  <div className="text-2xl text-accent">{chapter.metrics}</div>
+                  <h3 className="text-2xl md:text-4xl text-white mb-4">{chapter.product}</h3>
+                  <p className="text-lg md:text-xl text-white/60 mb-8">{chapter.description}</p>
+                  <div className="text-xl md:text-2xl text-accent">{chapter.metrics}</div>
                 </motion.div>
 
                 {/* Right side - Features and capabilities */}
                 <motion.div 
-                  className="col-span-7 pl-8"
+                  className="col-span-7 pl-8 hidden md:block"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false, margin: "-20% 0px" }}

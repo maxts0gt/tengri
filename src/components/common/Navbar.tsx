@@ -246,7 +246,7 @@ export default function Navbar() {
           <nav className="flex items-center justify-between h-24" role="navigation" aria-label="Main">
             <Link 
               href="/" 
-              className="relative group" 
+              className="relative group"
               aria-label="Tengri Home"
               onClick={(e) => {
                 e.preventDefault();
