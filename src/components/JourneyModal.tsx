@@ -12,6 +12,7 @@ export default function JourneyModal({ isOpen, onClose }: Props) {
   const [step, setStep] = useState(0);
   const [selectedPath, setSelectedPath] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const journeyPaths = [
     {
@@ -56,12 +57,16 @@ export default function JourneyModal({ isOpen, onClose }: Props) {
         body: JSON.stringify(data)
       });
 
-      if (!res.ok) throw new Error('Submission failed');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Submission failed');
+      }
       
       setStep(2); // Show success state
     } catch (error) {
       console.error('Submission error:', error);
-      // Handle error (show error message)
+      // Show error in UI
+      setError(error instanceof Error ? error.message : 'Something went wrong');
     } finally {
       setIsSubmitting(false);
     }

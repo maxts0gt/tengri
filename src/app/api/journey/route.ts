@@ -1,49 +1,76 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import JourneyNotificationEmail from '@/components/emails/JourneyNotificationEmail';
+import JourneyWelcomeEmail from '@/components/emails/JourneyWelcomeEmail';
 
-const resend = new Resend('re_YOUR_API_KEY'); // Get from resend.com
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('Missing RESEND_API_KEY environment variable');
+}
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { name, email, projectOverview, selectedPath } = body;
 
-    // Send notification email to your team
-    await resend.emails.send({
-      from: 'Tengri Journey <journey@tengri-consulting.com>',
-      to: ['team@tengri-consulting.com'],
-      subject: `New Journey Started: ${selectedPath}`,
-      html: `
-        <h2>New Journey Initiated</h2>
-        <p><strong>Path:</strong> ${selectedPath}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Project Overview:</strong></p>
-        <p>${projectOverview}</p>
-      `
-    });
+    console.log('Received journey request:', { name, email, projectOverview, selectedPath });
 
-    // Send confirmation email to the client
-    await resend.emails.send({
-      from: 'Tengri Consulting <hello@tengri-consulting.com>',
-      to: [email],
-      subject: 'Welcome to Your Digital Journey',
-      html: `
-        <h2>Welcome to Tengri Consulting</h2>
-        <p>Dear ${name},</p>
-        <p>Thank you for choosing to start your journey with us. Our team will review your vision and get back to you within 24 hours.</p>
-        <p>In the meantime, you can explore our work at <a href="https://tengri-consulting.com/our-work">tengri-consulting.com/our-work</a></p>
-      `
-    });
+    // Validate inputs
+    if (!name || !email || !projectOverview || !selectedPath) {
+      console.log('Missing required fields:', { name, email, projectOverview, selectedPath });
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
 
-    // Optional: Store in your database
-    // await prisma.journeyRequest.create({ data: { ... } });
+    try {
+      // Send notification email to your team
+      const notificationEmail = await resend.emails.send({
+        from: 'Tengri Journey <hello@tengri-consulting.com>',
+        to: ['hello@tengri-consulting.com'],
+        subject: `New Journey Started: ${selectedPath}`,
+        react: JourneyNotificationEmail({
+          name,
+          email,
+          projectOverview,
+          selectedPath
+        })
+      });
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
+      console.log('Notification email sent:', notificationEmail);
+
+      // Send welcome email to the client
+      const welcomeEmail = await resend.emails.send({
+        from: 'Tengri Consulting <hello@tengri-consulting.com>',
+        to: [email],
+        reply_to: 'hello@tengri-consulting.com',
+        subject: 'Welcome to Your Digital Journey',
+        react: JourneyWelcomeEmail({
+          name,
+          selectedPath
+        })
+      });
+
+      console.log('Welcome email sent:', welcomeEmail);
+
+      return NextResponse.json({ 
+        success: true,
+        notificationId: notificationEmail.data?.id,
+        welcomeId: welcomeEmail.data?.id
+      });
+    } catch (emailError: any) {
+      console.error('Email sending error:', emailError?.response?.body || emailError);
+      return NextResponse.json(
+        { error: 'Failed to send emails: ' + (emailError?.message || 'Unknown error') },
+        { status: 500 }
+      );
+    }
+  } catch (error: any) {
     console.error('Journey submission error:', error);
     return NextResponse.json(
-      { error: 'Failed to process journey request' },
+      { error: 'Failed to process journey request: ' + (error?.message || 'Unknown error') },
       { status: 500 }
     );
   }

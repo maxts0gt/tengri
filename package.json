@@ -12,6 +12,7 @@
     "@calcom/embed-react": "^1.5.1",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@react-email/components": "^0.0.28",
     "@react-three/drei": "^9.117.3",
     "@react-three/fiber": "^8.17.10",
     "@studio-freight/lenis": "^1.0.34",
@@ -21,11 +22,13 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.13.3",
+    "resend": "^4.0.1",
     "split-type": "^0.3.4",
     "three": "^0.170.0",
     "zustand": "4.3.8"
   },
   "devDependencies": {
+    "@react-email/render": "^1.0.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

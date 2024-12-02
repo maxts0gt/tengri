@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import { ClockIcon, VideoCameraIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from 'react';
+import { ClockIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
 import Cal, { getCalApi } from "@calcom/embed-react";
 
 interface Props {
@@ -14,9 +14,8 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
   const [step, setStep] = useState(0);
   const [selectedDuration, setSelectedDuration] = useState('');
   const [calReady, setCalReady] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize Cal.com with your custom colors
+  // Initialize Cal.com
   useEffect(() => {
     if (!isOpen || !selectedDuration) return;
 
@@ -72,7 +71,7 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -87,134 +86,113 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
           />
           
           {/* Modal Container */}
-          <div className="relative min-h-screen w-full flex items-center justify-center p-4 md:p-8">
-            <motion.div
-              ref={containerRef}
-              className="relative bg-[#0A1628] border border-white/10 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl"
-              style={{ position: 'relative' }}
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              transition={{ type: "spring", duration: 0.5 }}
-            >
-              <div className="max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 z-10 bg-[#0A1628] p-6 border-b border-white/10">
-                  <div className="flex justify-between items-center">
-                    {step === 1 && (
-                      <button
-                        onClick={() => setStep(0)}
-                        className="text-[#fafafa] flex items-center gap-2 hover:text-white/90 transition-colors"
-                      >
-                        ← Back
-                      </button>
-                    )}
-                    <button
-                      onClick={onClose}
-                      className="ml-auto text-white/60 hover:text-white transition-colors"
-                    >
-                      ✕
-                    </button>
+          <motion.div
+            className="relative bg-[#0A1628] rounded-2xl w-full max-w-xl mx-4 overflow-hidden"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+          >
+            {/* Header */}
+            <div className="p-6 pb-4 border-b border-white/10">
+              <div className="flex justify-between items-center">
+                {step === 1 ? (
+                  <button
+                    onClick={() => setStep(0)}
+                    className="text-white/60 hover:text-white flex items-center gap-2 transition-colors"
+                  >
+                    ← Back
+                  </button>
+                ) : (
+                  <div>
+                    <h2 className="text-2xl font-medium text-white">Schedule a Meeting</h2>
+                    <p className="text-gray-400 mt-1">Choose the type of conversation you'd like to have</p>
                   </div>
-                </div>
-
-                <div className="p-6">
-                  <AnimatePresence mode="wait">
-                    {step === 0 ? (
-                      // Meeting Type Selection
-                      <motion.div
-                        key="step0"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-8"
-                      >
-                        <div>
-                          <h3 className="text-2xl font-medium text-white mb-2">Schedule a Meeting</h3>
-                          <p className="text-white/60">Choose the type of conversation you'd like to have</p>
-                        </div>
-
-                        <div className="grid gap-4">
-                          {meetingTypes.map((type) => (
-                            <motion.button
-                              key={type.duration}
-                              onClick={() => {
-                                setSelectedDuration(type.duration);
-                                setStep(1);
-                              }}
-                              className={`
-                                p-6 rounded-xl border text-left transition-all
-                                ${selectedDuration === type.duration 
-                                  ? 'border-[#E63946] bg-[#E63946]/5' 
-                                  : 'border-white/10 hover:border-white/20 hover:bg-white/5'
-                                }
-                              `}
-                              whileHover={{ scale: 1.01 }}
-                              whileTap={{ scale: 0.99 }}
-                            >
-                              <div className="flex items-start gap-4">
-                                <div className="mt-1 text-white/60">{type.icon}</div>
-                                <div>
-                                  <div className="flex justify-between items-center mb-2">
-                                    <h4 className="text-white font-medium">{type.title}</h4>
-                                    <span className="text-white/60 text-sm">{type.duration}</span>
-                                  </div>
-                                  <p className="text-white/60 text-sm">{type.description}</p>
-                                </div>
-                              </div>
-                            </motion.button>
-                          ))}
-                        </div>
-                      </motion.div>
-                    ) : (
-                      // Calendar View
-                      <motion.div
-                        key="step1"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="space-y-6"
-                      >
-                        <div>
-                          <h3 className="text-2xl font-medium text-white mb-2">Select Your Time</h3>
-                          <div className="flex items-center gap-2 text-white/60">
-                            <GlobeAltIcon className="w-4 h-4" />
-                            <span className="text-sm">Times shown in your timezone</span>
-                          </div>
-                        </div>
-
-                        <div className="relative bg-white/5 rounded-xl overflow-hidden min-h-[600px]">
-                          {selectedMeeting && calReady ? (
-                            <Cal
-                              calLink={selectedMeeting.calLink}
-                              style={{ 
-                                width: "100%", 
-                                height: "100%",
-                                minHeight: "600px",
-                                position: 'relative'
-                              }}
-                              config={{
-                                theme: "dark",
-                                hideEventTypeDetails: false,
-                                layout: "month_view"
-                              }}
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-[600px] text-white/60">
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                className="w-8 h-8 border-2 border-[#E63946] border-t-transparent rounded-full"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                )}
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
               </div>
-            </motion.div>
-          </div>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {step === 0 ? (
+                /* Meeting Types */
+                <motion.div
+                  key="meeting-types"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="px-6 py-4 space-y-3"
+                >
+                  {meetingTypes.map((type) => (
+                    <motion.button
+                      key={type.duration}
+                      onClick={() => {
+                        setSelectedDuration(type.duration);
+                        setStep(1);
+                      }}
+                      className="w-full p-4 rounded-xl bg-[#0F2132] hover:bg-[#162939] transition-colors text-left"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-gray-400">
+                          {type.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-white font-medium">{type.title}</h3>
+                            <span className="text-gray-400 text-sm">{type.duration}</span>
+                          </div>
+                          <p className="text-gray-400 text-sm mt-1">{type.description}</p>
+                        </div>
+                      </div>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              ) : (
+                /* Calendar View */
+                <motion.div
+                  key="calendar"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="max-h-[calc(90vh-120px)] overflow-y-auto"
+                  style={{ 
+                    position: 'relative',
+                    WebkitOverflowScrolling: 'touch' // Smooth scrolling on iOS
+                  }}
+                >
+                  {selectedMeeting && calReady ? (
+                    <Cal
+                      calLink={selectedMeeting.calLink}
+                      style={{ 
+                        width: "100%", 
+                        minHeight: "680px", // Taller to show more of the calendar
+                        position: 'relative'
+                      }}
+                      config={{
+                        theme: "dark",
+                        hideEventTypeDetails: false,
+                        layout: "month_view"
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-[680px]">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="w-8 h-8 border-2 border-white/10 border-t-white rounded-full"
+                      />
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
