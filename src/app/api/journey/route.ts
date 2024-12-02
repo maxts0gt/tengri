@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       const welcomeEmail = await resend.emails.send({
         from: 'Tengri Consulting <hello@tengri-consulting.com>',
         to: [email],
-        reply_to: 'hello@tengri-consulting.com',
+        replyTo: 'hello@tengri-consulting.com',
         subject: 'Welcome to Your Digital Journey',
         react: JourneyWelcomeEmail({
           name,
