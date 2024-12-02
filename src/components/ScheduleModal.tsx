@@ -1,7 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import Cal component with ssr disabled
+const Cal = dynamic(
+  () => import('@calcom/embed-react').then((mod) => mod.default),
+  { ssr: false }
+);
 
 interface Props {
   isOpen: boolean;
@@ -11,6 +18,7 @@ interface Props {
 export default function ScheduleModal({ isOpen, onClose }: Props) {
   const [step, setStep] = useState(0);
   const [selectedDuration, setSelectedDuration] = useState('');
+  const [calendarReady, setCalendarReady] = useState(false);
 
   const meetingTypes = [
     {
@@ -24,6 +32,21 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
       description: 'Detailed discussion about your vision and requirements'
     }
   ];
+
+  useEffect(() => {
+    // Only load Cal.com script on client side
+    import('@calcom/embed-react').then(({ getCalApi }) => {
+      getCalApi().then((cal) => {
+        cal.on({
+          action: "bookingSuccessful",
+          callback: () => {
+            onClose();
+          },
+        });
+        setCalendarReady(true);
+      });
+    });
+  }, [onClose]);
 
   return (
     <AnimatePresence>
@@ -116,12 +139,30 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
                       <p className="text-white/60">Choose a time that works best for you</p>
                     </div>
 
-                    {/* Here you can integrate with Cal.com, Calendly, or your own scheduling system */}
-                    <div className="h-[400px] bg-white/5 rounded-xl p-4">
-                      {/* Calendar integration goes here */}
-                      <div className="flex items-center justify-center h-full text-white/60">
-                        Calendar integration loading...
-                      </div>
+                    <div className="h-[400px] bg-white/5 rounded-xl overflow-hidden">
+                      {calendarReady ? (
+                        <Cal
+                          calLink="your-org/discovery" // Replace with your Cal.com link
+                          style={{width: "100%", height: "100%"}}
+                          config={{
+                            name: "Tengri Consulting",
+                            theme: "dark",
+                            hideEventTypeDetails: false,
+                            layout: "month_view"
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-white/60">
+                          <motion.span
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="mr-2"
+                          >
+                            ⚡
+                          </motion.span>
+                          Loading calendar...
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}

@@ -3,10 +3,12 @@
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import ContactFloat from '@/components/ContactFloat';
+import JourneyModal from '@/components/JourneyModal';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentChapter, setCurrentChapter] = useState(-1);
+  const [isJourneyModalOpen, setIsJourneyModalOpen] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -313,15 +315,15 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col md:flex-row gap-6">
-                <motion.a
-                  href="/contact"
+                <motion.button
+                  onClick={() => setIsJourneyModalOpen(true)}
                   className="inline-flex items-center px-8 py-4 bg-[#E63946] text-white rounded-lg hover:bg-[#E63946]/90 transition-colors group"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <span className="text-lg font-medium">Start Your Journey</span>
                   <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                </motion.a>
+                </motion.button>
 
                 <motion.a
                   href="/our-work"
@@ -355,6 +357,10 @@ export default function Home() {
       </section>
 
       <ContactFloat />
+      <JourneyModal 
+        isOpen={isJourneyModalOpen}
+        onClose={() => setIsJourneyModalOpen(false)}
+      />
     </main>
   );
 }
