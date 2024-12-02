@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import ContactFloat from '@/components/ContactFloat';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,7 +73,7 @@ export default function Home() {
     }
   ];
   const lineHeight = currentChapter >= 0 
-    ? `${((currentChapter + 1) * 100) / chapters.length}%` 
+    ? `${((currentChapter + 1) * 100) / (chapters.length + 1)}%`
     : "0%";
   return (
     <main 
@@ -242,6 +243,118 @@ export default function Home() {
           </section>
         );
       })}
+
+      {/* Final Section - after chapters */}
+      <section 
+        className="h-screen w-full flex items-center snap-start snap-always relative"
+        ref={(node) => {
+          const observer = new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                setCurrentChapter(4); // Set to final chapter (index 4)
+              }
+            },
+            { threshold: 0.5 }
+          );
+          if (node) observer.observe(node);
+        }}
+      >
+        {/* Journey lines with arrow ending - only show when final chapter is active */}
+        <motion.div 
+          className="absolute left-[5vw] top-0 h-screen z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: currentChapter === 4 ? 1 : 0 }} // Show when final chapter is active
+          viewport={{ once: false }}
+        >
+          {/* Main lines */}
+          <div className="absolute left-0 w-[2px] h-[calc(50%-20px)] bg-[#E63946]" />
+          <div className="absolute left-[6px] w-[2px] h-[calc(50%-20px)] bg-[#E63946]" />
+          
+          {/* Arrow formation */}
+          <motion.div 
+            className="absolute left-[-4px] top-[calc(50%-20px)]"
+            initial={{ scale: 0, rotate: -45 }}
+            whileInView={{ scale: 1, rotate: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+          </motion.div>
+        </motion.div>
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628] to-[#0A1628]/90 z-0" />
+        
+        <div className="tengri-container relative z-20">
+          <div className="grid grid-cols-12 gap-8">
+            <motion.div 
+              className="col-span-12 md:col-span-8 space-y-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }}
+            >
+              <div className="space-y-6">
+                <motion.div 
+                  className="text-[#E63946] text-xl"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: false }}
+                >
+                  → Chapter Final: Execute
+                </motion.div>
+                
+                <h2 className="text-[clamp(2rem,5vw,4rem)] font-bold leading-tight">
+                  <span className="text-white">Ready to move</span>
+                  <br />
+                  <span className="text-[#E63946]">millions together?</span>
+                </h2>
+
+                <p className="text-xl text-white/60 max-w-2xl">
+                  From concept to execution, we're here to transform your vision into reality. 
+                  Let's build something extraordinary together.
+                </p>
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-6">
+                <motion.a
+                  href="/contact"
+                  className="inline-flex items-center px-8 py-4 bg-[#E63946] text-white rounded-lg hover:bg-[#E63946]/90 transition-colors group"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="text-lg font-medium">Start Your Journey</span>
+                  <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                </motion.a>
+
+                <motion.a
+                  href="/our-work"
+                  className="inline-flex items-center px-8 py-4 border border-white/20 text-white rounded-lg hover:bg-white/5 transition-colors group"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="text-lg font-medium">Explore Our Work</span>
+                  <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                </motion.a>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="hidden md:block col-span-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false }}
+            >
+              <div className="space-y-8">
+                <div className="text-white/40 text-sm">Global Digital Excellence</div>
+                <div className="grid grid-cols-2 gap-4">
+                  {['New York', 'London', 'Singapore', 'Tokyo'].map((city) => (
+                    <div key={city} className="text-white/40 text-sm">{city}</div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <ContactFloat />
     </main>
   );
 }
