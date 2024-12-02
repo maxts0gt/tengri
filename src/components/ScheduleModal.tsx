@@ -23,7 +23,6 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
       const cal = await getCalApi();
       cal("init", {
         origin: "https://cal.com",
-        theme: "dark",
         hideEventTypeDetails: false,
         layout: "month_view",
         cssVarsPerTheme: {
