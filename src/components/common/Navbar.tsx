@@ -130,17 +130,24 @@ const navigationStructure = [
   }
 ];
 
+// Add URL mapping for clean slugs
+const getUrlSlug = (title: string) => {
+  const slugMap: { [key: string]: string } = {
+    'News & Media': 'news-media',
+    'Business Systems': 'business',
+    'Cloud Services': 'cloud',
+    'Data Solutions': 'data',
+    'Campaign Strategy': 'campaign',
+    'Political Technology': 'political'
+  };
+  
+  return slugMap[title] || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+};
+
 // Move renderPreview outside of component to avoid recreation on each render
 const renderPreview = (item: MenuItem) => {
-  if (!item?.preview) return null;
-
   return (
-    <motion.div
-      className="space-y-12"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-    >
+    <motion.div className="space-y-12">
       <div className="space-y-4">
         <h3 className="text-3xl text-white font-light">
           {item.preview.heading}
@@ -150,31 +157,69 @@ const renderPreview = (item: MenuItem) => {
         </p>
       </div>
 
-      {item.preview.categories && (
-        <div className="grid grid-cols-2 gap-12">
-          {item.preview.categories.map((category) => (
-            <div key={category.title} className="space-y-6">
-              <h4 className="text-accent text-sm uppercase tracking-wider">
+      <div className="grid grid-cols-2 gap-12">
+        {item.preview.categories.map((category) => {
+          // Log the URL being generated
+          const url = `/solutions/${getUrlSlug(category.title)}`;
+          console.log('Generated URL:', url);
+          
+          return (
+            <Link 
+              href={url}
+              key={category.title} 
+              className="group block space-y-6 p-6 rounded-lg
+                       border border-transparent
+                       hover:border-white/10 hover:bg-white/5
+                       transition-all duration-300"
+              onClick={(e) => {
+                // Close the menu before navigation
+                setIsMenuOpen(false);
+                console.log('Link clicked, navigating to:', url);
+              }}
+            >
+              <h4 className="text-accent text-sm uppercase tracking-wider flex items-center justify-between">
                 {category.title}
+                <motion.span 
+                  className="text-accent/0 group-hover:text-accent/100 transition-colors"
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                >
+                  →
+                </motion.span>
               </h4>
+              
               <ul className="space-y-3">
                 {category.items.map((item) => (
-                  <li key={item} className="text-white/80 hover:text-white transition-colors">
+                  <li key={item} className="text-white/80 group-hover:text-white transition-colors">
                     {item}
                   </li>
                 ))}
               </ul>
-              <div className="text-accent text-sm">
-                → {category.capability}
+              
+              <div className="text-accent text-sm flex items-center justify-between">
+                <span>{category.capability}</span>
+                <span className="transform group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
               </div>
-            </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Journey Indicators */}
+      <div className="flex items-center space-x-3 pt-6 border-t border-white/10">
+        <div className="text-white/40 text-sm">Available Solutions</div>
+        <div className="flex items-center space-x-2">
+          {item.preview.categories.map((category, index) => (
+            <motion.div 
+              key={index}
+              className="w-12 h-[2px] bg-white/20"
+              whileHover={{ scaleX: 1.2, backgroundColor: "rgba(230, 57, 70, 1)" }}
+            />
           ))}
         </div>
-      )}
-
-      {item.title === 'Solutions' && <SolutionsPreview />}
-      {item.title === 'Technology' && <TechnologyPreview />}
-      {item.title === 'Strategy' && <StrategyPreview />}
+      </div>
     </motion.div>
   );
 };
