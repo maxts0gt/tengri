@@ -144,38 +144,40 @@ const getUrlSlug = (title: string) => {
   return slugMap[title] || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 };
 
-// Move renderPreview outside of component to avoid recreation on each render
-const renderPreview = (item: MenuItem) => {
-  return (
-    <motion.div className="space-y-12">
-      <div className="space-y-4">
-        <h3 className="text-3xl text-white font-light">
-          {item.preview.heading}
-        </h3>
-        <p className="text-white/60 text-lg">
-          {item.preview.description}
-        </p>
-      </div>
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeItem, setActiveItem] = useState('Solutions');
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-      <div className="grid grid-cols-2 gap-12">
-        {item.preview.categories.map((category) => {
-          // Log the URL being generated
-          const url = `/solutions/${getUrlSlug(category.title)}`;
-          console.log('Generated URL:', url);
-          
-          return (
+  // Move renderPreview inside the component
+  const renderPreview = (item: MenuItem) => {
+    return (
+      <motion.div className="space-y-12">
+        <div className="space-y-4">
+          <h3 className="text-3xl text-white font-light">
+            {item.preview.heading}
+          </h3>
+          <p className="text-white/60 text-lg">
+            {item.preview.description}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-12">
+          {item.preview.categories.map((category, index) => (
             <Link 
-              href={url}
+              href={`/solutions/${getUrlSlug(category.title)}`}
               key={category.title} 
               className="group block space-y-6 p-6 rounded-lg
                        border border-transparent
                        hover:border-white/10 hover:bg-white/5
                        transition-all duration-300"
-              onClick={(e) => {
-                // Close the menu before navigation
-                setIsMenuOpen(false);
-                console.log('Link clicked, navigating to:', url);
-              }}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => setIsMenuOpen(false)}
             >
               <h4 className="text-accent text-sm uppercase tracking-wider flex items-center justify-between">
                 {category.title}
@@ -203,34 +205,32 @@ const renderPreview = (item: MenuItem) => {
                 </span>
               </div>
             </Link>
-          );
-        })}
-      </div>
-
-      {/* Journey Indicators */}
-      <div className="flex items-center space-x-3 pt-6 border-t border-white/10">
-        <div className="text-white/40 text-sm">Available Solutions</div>
-        <div className="flex items-center space-x-2">
-          {item.preview.categories.map((category, index) => (
-            <motion.div 
-              key={index}
-              className="w-12 h-[2px] bg-white/20"
-              whileHover={{ scaleX: 1.2, backgroundColor: "rgba(230, 57, 70, 1)" }}
-            />
           ))}
         </div>
-      </div>
-    </motion.div>
-  );
-};
 
-export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [activeItem, setActiveItem] = useState('Solutions');
-  const router = useRouter();
-  const pathname = usePathname();
+        {/* Journey Indicators */}
+        <div className="flex items-center space-x-3 pt-6 border-t border-white/10">
+          <div className="text-white/40 text-sm">Available Solutions</div>
+          <div className="flex items-center space-x-2">
+            {item.preview.categories.map((category, index) => (
+              <motion.div 
+                key={index}
+                className="w-12 h-[2px]"
+                initial={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
+                animate={{ 
+                  backgroundColor: hoveredIndex === index 
+                    ? "rgba(230, 57, 70, 1)" 
+                    : "rgba(255, 255, 255, 0.2)",
+                  scaleX: hoveredIndex === index ? 1.2 : 1
+                }}
+                transition={{ duration: 0.2 }}
+              />
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   // Handle mobile detection with proper hydration
   useEffect(() => {

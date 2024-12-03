@@ -1,22 +1,19 @@
 "use client";
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import ScheduleModal from './ScheduleModal';
 
 export default function ContactFloat() {
   const [isHovered, setIsHovered] = useState(false);
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   return (
     <>
       <motion.div 
         className="fixed right-8 top-1/2 -translate-y-1/2 z-50"
-        style={{ opacity }}
-        initial={{ x: 100 }}
-        animate={{ x: 0 }}
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
       >
         <motion.div
@@ -30,7 +27,7 @@ export default function ContactFloat() {
             whileTap={{ scale: 0.98 }}
           >
             <div className="w-2 h-2 bg-[#E63946] rounded-full animate-pulse" />
-            <span className="text-white font-light">Connect With Us</span>
+            <span className="text-white font-light">Ready to talk?</span>
           </motion.div>
 
           <motion.div 
