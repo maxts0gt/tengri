@@ -23,25 +23,6 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
       const cal = await getCalApi();
       cal("init", {
         origin: "https://cal.com",
-        hideEventTypeDetails: false,
-        layout: "month_view",
-        cssVarsPerTheme: {
-          light: {
-            'cal-brand': '#292929',
-            'cal-brand-emphasis': '#1a1a1a',
-          },
-          dark: {
-            'cal-brand': '#fafafa',
-            'cal-brand-emphasis': '#ffffff',
-            'cal-bg': '#0A1628',
-            'cal-bg-emphasis': '#1a2b44',
-            'cal-text': '#ffffff',
-            'cal-text-emphasis': '#ffffff',
-            'cal-subtle-text': 'rgb(255 255 255 / 0.6)',
-            'cal-border': 'rgb(255 255 255 / 0.1)',
-            'cal-border-emphasis': 'rgb(255 255 255 / 0.2)',
-          }
-        }
       });
       setCalReady(true);
     })();
@@ -174,9 +155,7 @@ export default function ScheduleModal({ isOpen, onClose }: Props) {
                         position: 'relative'
                       }}
                       config={{
-                        theme: "dark",
-                        hideEventTypeDetails: false,
-                        layout: "month_view"
+                        theme: "dark"
                       }}
                     />
                   ) : (

@@ -5,6 +5,95 @@ import { useRef, useState, useEffect } from 'react';
 import ContactFloat from '@/components/ContactFloat';
 import JourneyModal from '@/components/JourneyModal';
 
+type Chapter = {
+  number: string;
+  title: string;
+  product: string;
+  description: string;
+  features: string[];
+  color: string;
+  metrics: string;
+};
+
+function ChapterSection({ chapter, index, onInView }: {
+  chapter: Chapter,
+  index: number,
+  onInView: (index: number) => void
+}) {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { amount: 0.5 });
+  
+  useEffect(() => {
+    if (isInView) {
+      onInView(index);
+    }
+  }, [isInView, index, onInView]);
+
+  return (
+    <section 
+      ref={sectionRef}
+      className="h-screen w-full flex items-center snap-start snap-always"
+    >
+      <div className="tengri-container">
+        <div className="grid grid-cols-12 gap-8">
+          {/* Left side with chapter number */}
+          <motion.div 
+            className="col-span-5 relative"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, margin: "-20% 0px" }}
+          >
+            {/* Chapter markers with number */}
+            <motion.div 
+              className="absolute -left-8"
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: false }}
+            >
+              <div className="w-2 h-2 bg-[#E63946] rounded-full" />
+              <div className="absolute top-0 left-[6px] w-2 h-2 bg-[#E63946] rounded-full" />
+              <div className="absolute -left-8 -top-8 text-[#E63946] text-2xl font-mono">
+                {chapter.number}
+              </div>
+            </motion.div>
+
+            <h2 className={`text-5xl md:text-8xl font-bold ${chapter.color} mb-6`}>
+              {chapter.title}
+            </h2>
+            <h3 className="text-2xl md:text-4xl text-white mb-4">{chapter.product}</h3>
+            <p className="text-lg md:text-xl text-white/60 mb-8">{chapter.description}</p>
+            <div className="text-xl md:text-2xl text-accent">{chapter.metrics}</div>
+          </motion.div>
+
+          {/* Right side - Features and capabilities */}
+          <motion.div 
+            className="col-span-7 pl-8 hidden md:block"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-20% 0px" }}
+          >
+            <div className="grid grid-cols-2 gap-8">
+              {chapter.features.map((feature, i) => (
+                <motion.div
+                  key={feature}
+                  className="bg-white/5 p-6 rounded-lg backdrop-blur-sm"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <div className="text-accent mb-2">→</div>
+                  <div className="text-white text-lg">{feature}</div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentChapter, setCurrentChapter] = useState(-1);
@@ -170,81 +259,14 @@ export default function Home() {
         />
       </motion.div>
 
-      {chapters.map((chapter, index) => {
-        const sectionRef = useRef(null);
-        const isInView = useInView(sectionRef, { amount: 0.5 });
-        
-        useEffect(() => {
-          if (isInView) {
-            setCurrentChapter(index);
-          }
-        }, [isInView, index]);
-
-        return (
-          <section 
-            key={chapter.title}
-            ref={sectionRef}
-            className="h-screen w-full flex items-center snap-start snap-always"
-          >
-            <div className="tengri-container">
-              <div className="grid grid-cols-12 gap-8">
-                {/* Left side with chapter number */}
-                <motion.div 
-                  className="col-span-5 relative"
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: false, margin: "-20% 0px" }}
-                >
-                  {/* Chapter markers with number */}
-                  <motion.div 
-                    className="absolute -left-8"
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: false }}
-                  >
-                    <div className="w-2 h-2 bg-[#E63946] rounded-full" />
-                    <div className="absolute top-0 left-[6px] w-2 h-2 bg-[#E63946] rounded-full" />
-                    <div className="absolute -left-8 -top-8 text-[#E63946] text-2xl font-mono">
-                      {chapter.number}
-                    </div>
-                  </motion.div>
-
-                  <h2 className={`text-5xl md:text-8xl font-bold ${chapter.color} mb-6`}>
-                    {chapter.title}
-                  </h2>
-                  <h3 className="text-2xl md:text-4xl text-white mb-4">{chapter.product}</h3>
-                  <p className="text-lg md:text-xl text-white/60 mb-8">{chapter.description}</p>
-                  <div className="text-xl md:text-2xl text-accent">{chapter.metrics}</div>
-                </motion.div>
-
-                {/* Right side - Features and capabilities */}
-                <motion.div 
-                  className="col-span-7 pl-8 hidden md:block"
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: "-20% 0px" }}
-                >
-                  <div className="grid grid-cols-2 gap-8">
-                    {chapter.features.map((feature, i) => (
-                      <motion.div
-                        key={feature}
-                        className="bg-white/5 p-6 rounded-lg backdrop-blur-sm"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: false }}
-                        transition={{ delay: i * 0.1 }}
-                      >
-                        <div className="text-accent mb-2">→</div>
-                        <div className="text-white text-lg">{feature}</div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </section>
-        );
-      })}
+      {chapters.map((chapter, index) => (
+        <ChapterSection
+          key={chapter.title}
+          chapter={chapter}
+          index={index}
+          onInView={setCurrentChapter}
+        />
+      ))}
 
       {/* Final Section - after chapters */}
       <section 

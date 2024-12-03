@@ -43,7 +43,7 @@ export default function ContactFloat() {
             transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
           >
             <div className="p-8 whitespace-nowrap">
-              <h4 className="text-[#E63946] text-sm uppercase tracking-wider mb-4">Let's Build Together</h4>
+              <h4 className="text-[#E63946] text-sm uppercase tracking-wider mb-4">Let&apos;s Build Together</h4>
               <div className="space-y-6">
                 <div>
                   <p className="text-white/60 text-sm mb-1">Quick Connect</p>

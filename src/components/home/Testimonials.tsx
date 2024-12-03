@@ -85,7 +85,7 @@ export default function Testimonials() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
           >
-            Client Success Stories
+            Client&apos;s testimonial
           </motion.p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Trusted by Industry Leaders
