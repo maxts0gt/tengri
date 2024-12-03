@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Logo from './Logo';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import SolutionsPreview from '../previews/SolutionsPreview';
 import TechnologyPreview from '../previews/TechnologyPreview';
 import StrategyPreview from '../previews/StrategyPreview';
@@ -184,6 +184,8 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeItem, setActiveItem] = useState('Solutions');
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Handle mobile detection with proper hydration
   useEffect(() => {
@@ -234,6 +236,26 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
+  // Update the Logo click handler
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+
+    if (pathname === '/') {
+      // On homepage, scroll to top
+      const mainContent = document.querySelector('main');
+      if (mainContent) {
+        mainContent.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      // On other pages, navigate to homepage
+      router.push('/');
+    }
+  };
+
   return (
     <>
       <motion.header 
@@ -248,17 +270,7 @@ export default function Navbar() {
               href="/" 
               className="relative group"
               aria-label="Tengri Home"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsMenuOpen(false);
-                const mainContent = document.querySelector('main');
-                if (mainContent) {
-                  mainContent.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                  });
-                }
-              }}
+              onClick={handleLogoClick}
             >
               <Logo />
             </Link>

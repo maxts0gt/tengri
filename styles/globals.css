@@ -27,3 +27,12 @@
       display: none;
     }
   }
+
+  .full-page-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }

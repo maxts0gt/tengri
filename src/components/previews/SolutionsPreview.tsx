@@ -9,7 +9,7 @@ const portfolioSites = [
   {
     id: 'news-platform',
     name: 'News Publishing Platform',
-    url: 'https://your-news-platform.com',
+    url: '/solutions/news-media',
     description: 'Modern news platform built for global scale and real-time engagement',
     image: {
       src: '/images/portfolio/news-platform.webp',
