@@ -13,26 +13,37 @@ export default function NewsMediaSolution() {
 
   useEffect(() => {
     const handleScroll = (event: WheelEvent) => {
-      event.preventDefault();
-      const delta = Math.sign(event.deltaY);
       const sections = document.querySelectorAll('.full-page-section');
       const currentSection = Array.from(sections).findIndex(section => {
         const rect = section.getBoundingClientRect();
-        return rect.top >= 0 && rect.bottom <= window.innerHeight;
+        return Math.abs(rect.top) < window.innerHeight / 2;
       });
 
       if (currentSection !== -1) {
-        const nextSection = sections[currentSection + delta];
-        if (nextSection) {
-          nextSection.scrollIntoView({ behavior: 'smooth' });
-        }
+        event.preventDefault();
+        const delta = Math.sign(event.deltaY);
+        const nextIndex = Math.max(0, Math.min(sections.length - 1, currentSection + delta));
+        sections[nextIndex].scrollIntoView({ behavior: 'smooth' });
       }
     };
 
-    window.addEventListener('wheel', handleScroll, { passive: false });
+    // Use requestAnimationFrame to debounce scroll events
+    let ticking = false;
+    const wheelListener = (event: WheelEvent) => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll(event);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Add passive: false to ensure preventDefault works consistently
+    window.addEventListener('wheel', wheelListener, { passive: false });
 
     return () => {
-      window.removeEventListener('wheel', handleScroll);
+      window.removeEventListener('wheel', wheelListener);
     };
   }, []);
 
